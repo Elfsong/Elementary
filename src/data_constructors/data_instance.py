@@ -1,11 +1,13 @@
 # coding: utf-8
 
+import re
+import ftfy
 from enum import Enum
 
 class Mode(Enum):
-    LP = 1
-    SS = 2
-    LPSS = 3
+    LP = "lp:"
+    SS = "ss:"
+    LPSS = "lp+ss:"
 
 class Label(Enum):
     TRUE = "true"
@@ -23,9 +25,18 @@ class DataInstance(object):
         self.source = self.generate_source()
         self.target = self.generate_target()
     
-    def sentence_preprocess(self, sentence: str) -> str:
-        # TODO: implement it
-        return ""
+    @staticmethod
+    def sentence_preprocess(sentence: str) -> str:
+        sentence = ftfy.fix_text(sentence)
+        sentence = sentence.lower()
+        sentence = re.sub("_", " ", sentence)
+        sentence = re.sub("--", "-", sentence)
+        sentence = re.sub("``", '"', sentence)
+        sentence = re.sub("''", '"', sentence)
+        sentence = re.sub("\t", " ", sentence)
+        sentence = re.sub("\n", " ", sentence)
+        sentence = re.sub("    ", " ", sentence)
+        return sentence
 
     def label_convert(self) -> str:
         return str(self.label.value)
@@ -33,7 +44,7 @@ class DataInstance(object):
     def merge_evidences(self) -> str:
         context = ""
         for index, evidence in enumerate(self.evidence_list):
-            context += ("<s" + str(index) + "> " + evidence + " ")
+            context += ("<s" + str(index) + "> " + DataInstance.sentence_preprocess(evidence) + " ")
         return context
     
     def generate_evidence_index(self) -> str:
@@ -62,7 +73,7 @@ class DataInstance(object):
 
 
 if __name__ == "__main__":
-    test_claim = DataInstance(111, "test_claim", ["test_evidence_1", "test_evidence_2", "test_evidence_3"], [1, 2], Label.UNKNOWN)
+    test_claim = DataInstance(111, "test_claim", ["test_evidence\t_1", "test_\t\nevidence_2", "test_    evidence_3"], [1, 2], Label.UNKNOWN)
     print(test_claim.merge_evidences())
     print(test_claim.generate_evidence_index())
     print(test_claim.generate_evidence_multihot())

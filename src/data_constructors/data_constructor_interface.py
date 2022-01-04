@@ -1,28 +1,12 @@
 # coding: utf-8
 
-from enum import Enum
-from data_instance import DataInstance
-
-class Mode(Enum):
-    LP = 1
-    SS = 2
-    LPSS = 3
+from data_instance import DataInstance, Mode, Label
 
 class DataConstructor(object):
     def __init__(self, name: str, mode: Mode):
         self.name = name
         self.mode = mode
-
-        # Determine prefix by current mode
-        self.prefix == ""
-        if self.mode == Mode.LP:
-            self.prefix = "LP:"
-        elif self.mode == Mode.SS:
-            self.prefix = "SS:"
-        elif self.mode == Mode.LPSS:
-            self.prefix = "LPSS:"
-        else:
-            raise ValueError("Invalid mode")
+        self.prefix = self.mode.value
     
     def coordinate(self, data):
         raise NotImplementedError
@@ -33,14 +17,19 @@ class DataConstructor(object):
     def transform_for_TPU(self, data_instance: DataInstance) -> str:
         source = data_instance.source
         target = data_instance.target
-        return f"{source}\t{target}"
+        return f"{self.prefix} {source}\t{target}"
 
     def transform_for_GPU(self, data_instance: DataInstance) -> (str, str):
-        source = data_instance.source
+        source = self.prefix + " " + data_instance.source
         target = data_instance.target
         return (source, target)
 
 
 if __name__ == "__main__":
-    data_constructor = DataConstructor("test")
-    print(data_constructor.name)
+    test_data_constructor = DataConstructor("test", Mode.LPSS)
+    test_data_instance = DataInstance(111, "test_claim", ["test_evidence_1", "test_evidence_2", "test_evidence_3"], [1, 2], Label.UNKNOWN)
+
+    print(test_data_constructor.name)
+    print(test_data_constructor.transform_for_GPU(test_data_instance))
+    print(test_data_constructor.transform_for_TPU(test_data_instance))
+    
