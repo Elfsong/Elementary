@@ -2,17 +2,7 @@
 
 import re
 import ftfy
-from enum import Enum
-
-class Mode(Enum):
-    LP = "lp:"
-    SS = "ss:"
-    LPSS = "lp+ss:"
-
-class Label(Enum):
-    TRUE = "true"
-    FALSE = "false"
-    UNKNOWN = "unknown"
+from utils import *
 
 class DataInstance(object):
     def __init__(self, cid: any, claim: str, evidence_list: list, selected_evidence_index: list, label: Label):

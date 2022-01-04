@@ -1,6 +1,9 @@
 # coding: utf-8
 
-from data_instance import DataInstance, Mode, Label
+import sys
+sys.path.append("..")
+from utils import *
+from data_instance import DataInstance
 
 class DataConstructor(object):
     def __init__(self, name: str, mode: Mode):
