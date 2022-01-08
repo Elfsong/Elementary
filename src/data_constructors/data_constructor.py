@@ -11,21 +11,27 @@ class DataConstructor(object):
         self.mode = mode
         self.prefix = self.mode.value
     
-    def coordinate(self, data):
+    def batch_construct(self, data_path):
         raise NotImplementedError
     
     def construct(self, data):
         raise NotImplementedError
 
-    def transform_for_TPU(self, data_instance: DataInstance) -> str:
+    def transform_for_TPU(self, data_instance: DataInstance, is_train: bool) -> str:
         source = data_instance.source
         target = data_instance.target
-        return f"{self.prefix} {source}\t{target}"
+        if is_train:
+            return f"{self.prefix} {source}\t{target}"
+        else:
+            return f"{self.prefix} {source}"
 
-    def transform_for_GPU(self, data_instance: DataInstance) -> (str, str):
+    def transform_for_GPU(self, data_instance: DataInstance, is_train: bool) -> (str, str):
         source = self.prefix + " " + data_instance.source
         target = data_instance.target
-        return (source, target)
+        if is_train:
+            return (source, target)
+        else:
+            return (source, None)
 
 
 if __name__ == "__main__":
