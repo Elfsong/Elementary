@@ -50,10 +50,10 @@ def construct_source_target(claim_instance, doc_candidates):
         for index, sentence in enumerate(doc_abstract):
             sentence = process_evid(sentence)
             source += f"s{index}: " + sentence + " "
-        target += (" ".join([str(i) for i in selected_index]))
+        # target += (" ".join([str(i) for i in selected_index]))
 
-        if not selected_index:
-            target = "unknown "
+        # if not selected_index:
+        #     target = "unknown "
 
         # if claim_label != "unknown":
         #     sources += [source]
@@ -85,13 +85,13 @@ for claim_id in scifact_claim_dev_dict:
 
 input_path = "/home/mingzhe/Projects/Elementary/input/combine/"
 
-with open(input_path + "val.source", "w") as source_f:
-    for line in sources:
-        source_f.write(line + "\n")
+# with open(input_path + "val.source", "w") as source_f:
+#     for line in sources:
+#         source_f.write(line + "\n")
     
-with open(input_path + "val.target", "w") as target_f:
-    for line in targets:
-        target_f.write(line + "\n")
+# with open(input_path + "val.target", "w") as target_f:
+#     for line in targets:
+#         target_f.write(line + "\n")
 
 with open(input_path + "val.data", "w") as data_f:
     for line in tpu_data:
