@@ -6,8 +6,8 @@ sys.path.append("..")
 from utils import *
 
 scifact_claim_train_dict = get_scifact_dataset("/home/mingzhe/Projects/Elementary/data/Scifact/claims_train.jsonl")
-scifact_claim_dev_dict = get_scifact_dataset("/home/mingzhe/Projects/Elementary/data/Scifact/claims_train.jsonl")
-scifact_claim_test_dict = get_scifact_dataset("/home/mingzhe/Projects/Elementary/data/Scifact/claims_train.jsonl")
+scifact_claim_dev_dict = get_scifact_dataset("/home/mingzhe/Projects/Elementary/data/Scifact/claims_dev.jsonl")
+scifact_claim_test_dict = get_scifact_dataset("/home/mingzhe/Projects/Elementary/data/Scifact/claims_test.jsonl")
 scifact_corpus_dict = get_scifact_corpus("/home/mingzhe/Projects/Elementary/data/Scifact/corpus.jsonl")
 
 def get_lable(claim):
@@ -32,7 +32,8 @@ def construct_source_target(claim_instance, doc_candidates):
 
     for doc_id in doc_candidates:
         source = (f"<s> claim:" + claim_content + " ")
-        target = (claim_label + " ")
+        # target = (claim_label + " ")
+        target = ""
 
         doc_info = scifact_corpus_dict[doc_id]
         doc_title = doc_info["title"]
@@ -49,18 +50,18 @@ def construct_source_target(claim_instance, doc_candidates):
         for index, sentence in enumerate(doc_abstract):
             sentence = process_evid(sentence)
             source += f"s{index}: " + sentence + " "
-        target += (" ".join([str(i) for i in selected_index]))
+        # target += (" ".join([str(i) for i in selected_index]))
 
-        if not selected_index:
-            target = "unknown "
+        # if not selected_index:
+        #     target = "unknown "
 
-        if claim_label != "unknown":
-            sources += [source]
-            targets += [target]
-            sources += [source]
-            targets += [target]
-            tpu_data += [f"{source}\t{target}"]
-            tpu_data += [f"{source}\t{target}"]
+        # if claim_label != "unknown":
+        #     sources += [source]
+        #     targets += [target]
+        #     sources += [source]
+        #     targets += [target]
+        #     tpu_data += [f"{source}\t{target}"]
+        #     tpu_data += [f"{source}\t{target}"]
         sources += [source]
         targets += [target]
         tpu_data += [f"{source}\t{target}"]
@@ -71,8 +72,8 @@ sources = []
 targets = []
 tpu_data = []
 
-for claim_id in scifact_claim_train_dict:
-    claim_instance = scifact_claim_train_dict[claim_id]
+for claim_id in scifact_claim_dev_dict:
+    claim_instance = scifact_claim_dev_dict[claim_id]
 
     # doc candidates
     doc_candidates = list()
@@ -84,14 +85,14 @@ for claim_id in scifact_claim_train_dict:
 
 input_path = "/home/mingzhe/Projects/Elementary/input/combine/"
 
-with open(input_path + "train.source", "w") as source_f:
+with open(input_path + "val.source", "w") as source_f:
     for line in sources:
         source_f.write(line + "\n")
     
-with open(input_path + "train.target", "w") as target_f:
+with open(input_path + "val.target", "w") as target_f:
     for line in targets:
         target_f.write(line + "\n")
 
-with open(input_path + "train.data", "w") as data_f:
+with open(input_path + "val.data", "w") as data_f:
     for line in tpu_data:
         data_f.write(line + "\n")
