@@ -32,7 +32,7 @@ def construct_source_target(claim_instance, doc_candidates):
 
     for doc_id in doc_candidates:
         source = (f"<s> claim:" + claim_content + " ")
-        # target = (claim_label + " ")
+        target = (claim_label + " ")
         target = ""
 
         doc_info = scifact_corpus_dict[doc_id]
@@ -50,10 +50,10 @@ def construct_source_target(claim_instance, doc_candidates):
         for index, sentence in enumerate(doc_abstract):
             sentence = process_evid(sentence)
             source += f"s{index}: " + sentence + " "
-        # target += (" ".join([str(i) for i in selected_index]))
+        target += (" ".join([str(i) for i in selected_index]))
 
-        # if not selected_index:
-        #     target = "unknown "
+        if not selected_index:
+            target = "unknown "
 
         # if claim_label != "unknown":
         #     sources += [source]
